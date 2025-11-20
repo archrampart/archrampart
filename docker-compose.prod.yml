@@ -1,0 +1,84 @@
+services:
+  db:
+    image: postgres:15
+    container_name: rampart_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-archrampart}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-archrampart_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-archrampart_audit}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-archrampart}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rampart_network
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rampart_backend
+    entrypoint: ["sh", "-c"]
+    command: >
+      "
+        ./docker-init.sh &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+      "
+    volumes:
+      - ./backend/uploads:/app/uploads
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-archrampart}:${POSTGRES_PASSWORD:-archrampart_pass}@db:5432/${POSTGRES_DB:-archrampart_audit}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-"[\"*\"]"}
+      UPLOAD_DIR: ./uploads
+      MAX_UPLOAD_SIZE: ${MAX_UPLOAD_SIZE:-10485760}
+      DEFAULT_LANGUAGE: ${DEFAULT_LANGUAGE:-tr}
+      SUPPORTED_LANGUAGES: ${SUPPORTED_LANGUAGES:-"[\"tr\",\"en\"]"}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - rampart_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: rampart_frontend
+    volumes:
+      - ./backend/uploads:/app/uploads
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - rampart_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  rampart_network:
+    driver: bridge
+
+
+
+
+
