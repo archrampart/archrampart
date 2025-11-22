@@ -131,8 +131,6 @@ Platform, ISO/IEC 27001, PCI DSS, GDPR, KVKK, NIST Cybersecurity Framework, CIS 
 - **Modern UI/UX**: Tailwind CSS tabanlı profesyonel tasarım
 - **Hızlı arama ve filtreleme**: Gelişmiş arama ve filtreleme özellikleri
 - **Gerçek zamanlı güncellemeler**: Anlık veri senkronizasyonu
-- **Profesyonel footer**: Her sayfanın altında copyright bilgisi ve website linki (archrampart.com)
-- **SEO optimize**: HTML meta tags, Open Graph ve Twitter Card desteği
 
 #### 🔒 Veri Güvenliği
 - **On-premise deployment**: Verilerinizin tam kontrolü
@@ -260,8 +258,6 @@ The platform supports audits according to international and national security st
 - **Modern UI/UX**: Professional Tailwind CSS-based design
 - **Fast search and filtering**: Advanced search and filtering features
 - **Real-time updates**: Instant data synchronization
-- **Professional footer**: Copyright information and website link (archrampart.com) at the bottom of every page
-- **SEO optimized**: HTML meta tags, Open Graph and Twitter Card support
 
 #### 🔒 Data Security
 - **On-premise deployment**: Full control of your data
